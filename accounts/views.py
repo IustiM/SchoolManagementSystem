@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from .forms import SignupForm, LoginForm
-
+from django.http import HttpResponse
 
 def signup(request):
     if request.method == 'POST':
@@ -13,13 +13,13 @@ def signup(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
-            return redirect('home')
+            return redirect('login')
     else:
         form = SignupForm()
-    return render(request, 'Accounts/signup.html', {'form': form})
+    return render(request, 'accounts/signup.html', {'form': form})
 
 
-def login(request):
+def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -33,9 +33,17 @@ def login(request):
                 form.add_error(None, 'Invalid username or password')
     else:
         form = LoginForm()
-    return render(request, 'Accounts/login.html', {'form': form})
-
+    return render(request, 'accounts/login.html', {'form': form})
 
 @login_required
+def logout(request):
+    return redirect('home')
+
+
 def home(request):
-    return render(request, 'Accounts/home.html')
+    # response = HttpResponse('merge')
+    # return response
+    return render(request, 'accounts/home.html')
+
+def profile(request):
+    return render(request, 'accounts/profile.html')
