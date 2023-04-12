@@ -8,7 +8,6 @@ class Student(models.Model):
     address = models.TextField()
     date_created = models.DateTimeField(auto_now_add=True)
 
-
     def __str__(self):
         return self.name
 
@@ -18,3 +17,5 @@ class Attendance(models.Model):
     date = models.DateField(auto_now_add=True)
     is_present = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"{self.student.name} - {self.date}"
