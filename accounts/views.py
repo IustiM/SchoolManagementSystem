@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import NewUser
-from .serializers import NewUserSerializer
+from .serializers import NewUserSerializer, CustomAccountManagerSerializer
 
 
 #
@@ -96,11 +96,11 @@ class CustomAccountManagerList(APIView):
 
     def get(self, request, format=None):
         managers = NewUser.objects.all()
-        serializer = NewUserSerializer(managers, many=True)
+        serializer = CustomAccountManagerSerializer(managers, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = NewUserSerializer(data=request.data)
+        serializer = CustomAccountManagerSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -114,12 +114,12 @@ class CustomAccountManagerDetail(APIView):
 
     def get(self, request, pk, format=None):
         manager = self.get_object(pk)
-        serializer = NewUserSerializer(manager.data)
+        serializer = CustomAccountManagerSerializer(manager.data)
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
         manager = self.get_object(pk)
-        serializer = NewUserSerializer(manager, data=request.data)
+        serializer = CustomAccountManagerSerializer(manager, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
