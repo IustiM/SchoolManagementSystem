@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 
 from .models import NewUser
 from .serializers import NewUserSerializer, CustomAccountManagerSerializer
@@ -52,6 +53,32 @@ from .serializers import NewUserSerializer, CustomAccountManagerSerializer
 # def profile(request):
 #     return render(request, 'accounts/profile.html')
 
+class home(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name='accounts/home.html'
+    def get(self, request):
+        # return render(request, 'accounts/home.html')
+        return Response()
+
+class login(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'accounts/login.html'
+    def get(self, request):
+        return Response()
+
+class logout(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'accounts/logout.html'
+    def get(self, request):
+        return Response()
+
+class profile(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'accounts/profile.html'
+    def get(self, request):
+        return Response()
+
+
 
 class NewUserList(APIView):
 
@@ -62,10 +89,9 @@ class NewUserList(APIView):
 
     def post(self, request, format=None):
         serializer = NewUserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class NewUserDetail(APIView):
@@ -81,10 +107,9 @@ class NewUserDetail(APIView):
     def put(self, request, pk, format=None):
         new_user = self.get_object(pk)
         serializer = NewUserSerializer(new_user, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
     def delete(self, request, pk, format=None):
         new_user = self.get_object(pk)
@@ -129,3 +154,6 @@ class CustomAccountManagerDetail(APIView):
         manager = self.get_object(pk)
         manager.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# <!--                <li><a href="{% url 'students/students' %}">Students</a></li>-->
