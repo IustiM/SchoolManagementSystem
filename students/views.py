@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -38,27 +39,32 @@ from .serializers import StudentSerializer, AttendanceSerializer
 
 
 class StudentList(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'students/student_list.html'
+
     def get(self, request, format=None):
         students = Student.objects.all()
         serializers = StudentSerializer(students, many=True)
-        return Response(serializers.data)
+        return Response({"students": serializers.data})
 
     def post(self, request, format=None):
         serializer = StudentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class StudentDetail(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'students/student_detail.html'
+
     def get_object(self, pk):
         return get_object_or_404(Student, pk=pk)
 
     def get(self, request, pk, format=None):
         student = self.get_object(pk)
         serializer = StudentSerializer(student)
-        return Response(serializer.data)
+        return Response({"students": serializer.data})
 
     def put(self, request, pk, format=None):
         student = self.get_object(pk)
@@ -75,10 +81,16 @@ class StudentDetail(APIView):
 
 
 class AttendanceList(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'students/student_attendance.html'
+
+    def get_object(self, pk):
+        return get_object_or_404(Attendance, pk=pk)
+
     def get(self, request, format=None):
         attendance = Attendance.objects.all()
         serializer = AttendanceSerializer(attendance, many=True)
-        return Response(serializer.data)
+        return Response({"students": serializer.data})
 
     def post(self, request, format=None):
         serializer = AttendanceSerializer(data=request.data)
@@ -89,13 +101,16 @@ class AttendanceList(APIView):
 
 
 class AttendanceDetail(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'students/student_detail.html'
+
     def get_object(self, pk):
         return get_object_or_404(Attendance, pk=pk)
 
     def get(self, request, pk, format=None):
         attendance = self.get_object(pk)
         serializer = AttendanceSerializer(attendance.data)
-        return Response(serializer.data)
+        return Response({"students": serializer.data})
 
     def put(self, request, pk, format=None):
         attendance = self.get_object(pk)
@@ -109,3 +124,5 @@ class AttendanceDetail(APIView):
         attendance = self.get_object(pk)
         attendance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# <td><a href="{% url 'student_detail' student.id %}">View Profile</a></td>

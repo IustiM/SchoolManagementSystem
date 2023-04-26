@@ -1,13 +1,11 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ student.first_name }} {{ student.last_name }}{% endblock %}
+{% block title %} {{ student.name }} {% endblock %}
 
-{% block page_content %}}
-  <h1>{{ student.first_name }} {{ student.last_name }}</h1>
-  <p><strong>Registration Number:</strong> {{ student.reg_no }}</p>
+{% block content %}
+  <h1>{{ student.name }}</h1>
   <p><strong>Email:</strong> {{ student.email }}</p>
-  <p><strong>Phone Number:</strong> {{ student.phone_number }}</p>
-  <p><strong>Date of Birth:</strong> {{ student.date_of_birth }}</p>
+  <p><strong>Phone Number:</strong> {{ student.phone }}</p>
   <h2>Attendance</h2>
   <table>
     <thead>
@@ -20,7 +18,6 @@
       {% for attendance in student.attendance_set.all %}
         <tr>
           <td>{{ attendance.date }}</td>
-          <td>{{ attendance.status }}</td>
         </tr>
       {% empty %}
         <tr>
@@ -29,5 +26,5 @@
       {% endfor %}
     </tbody>
   </table>
-  <a href="{% url 'student_attendance' student.id %}">Record Attendance</a>
+  <a href="{{student.attendance}}">Record Attendance</a>
 {% endblock %}
