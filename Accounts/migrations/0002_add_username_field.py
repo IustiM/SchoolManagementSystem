@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='newuser',
             name='last_login',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='last login'),
+            field=models.DateTimeField(blank=True, null=True, verbose_name='last Login'),
         ),
         migrations.AddField(
             model_name='newuser',
