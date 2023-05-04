@@ -4,6 +4,7 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .forms import StudentForm
 from .models import Student, Attendance
 from .serializers import StudentSerializer, AttendanceSerializer
 
@@ -17,7 +18,7 @@ from .serializers import StudentSerializer, AttendanceSerializer
 #             return redirect('student_detail', pk=student.pk)
 #     else:
 #         form = StudentForm()
-#     return render(request, 'students/register_student.html', {'form': form})
+#     return render(request, 'students/student_register.html', {'form': form})
 #
 #
 # def student_detail(request, pk):
@@ -37,6 +38,25 @@ from .serializers import StudentSerializer, AttendanceSerializer
 #     else:
 #         return render(request, 'students/student_attendance.html', {'student': student})
 
+
+class StudentRegister(APIView):
+    def get(self, request):
+        form = StudentForm()
+        return Response({'form': form}, template_name='student_register.html')
+
+    def post(self, request, format=None):
+        form = StudentForm(request.POST)
+        if form.is_valid():
+            students = form.save()
+            serializer = StudentSerializer(students)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+    # def post(self, request):
+    #     serializer = StudentSerializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class StudentList(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
@@ -69,10 +89,13 @@ class StudentDetail(APIView):
     def put(self, request, pk, format=None):
         student = self.get_object(pk)
         serializer = StudentSerializer(student, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return Response(serializer.data)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
         student = self.get_object(pk)
@@ -89,8 +112,10 @@ class AttendanceList(APIView):
 
     def get(self, request, format=None):
         attendance = Attendance.objects.all()
-        serializer = AttendanceSerializer(attendance, many=True)
-        return Response({"students": serializer.data})
+        serializer_attendance = AttendanceSerializer(attendance, many=True)
+        students = Student.objects.all()
+        serializer_students = StudentSerializer(students, many=True)
+        return Response({"students": serializer_students.data, "attendance": serializer_attendance.data})
 
     def post(self, request, format=None):
         serializer = AttendanceSerializer(data=request.data)
@@ -109,16 +134,19 @@ class AttendanceDetail(APIView):
 
     def get(self, request, pk, format=None):
         attendance = self.get_object(pk)
-        serializer = AttendanceSerializer(attendance.data)
-        return Response({"students": serializer.data})
+        serializer = AttendanceSerializer(attendance)
+        return Response({"attendance": serializer.data})
 
     def put(self, request, pk, format=None):
         attendance = self.get_object(pk)
         serializer = AttendanceSerializer(attendance, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return Response(serializer.data)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
         attendance = self.get_object(pk)

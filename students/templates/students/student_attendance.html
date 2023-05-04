@@ -3,7 +3,7 @@
 {% block title %}Record Attendance{% endblock %}
 
 {% block content %}
-  <h1>Record Attendance for {{ student.name }}</h1>
+  <h1>Record Attendance for {{ students.name }}</h1>
   <form method="post">
     {% csrf_token %}
     <table>

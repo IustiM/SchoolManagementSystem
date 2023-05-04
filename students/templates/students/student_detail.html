@@ -1,30 +1,31 @@
 {% extends 'base.html' %}
 
-{% block title %} {{ student.name }} {% endblock %}
+{% block title %}{{ students.name }}{% endblock %}
 
 {% block content %}
-  <h1>{{ student.name }}</h1>
-  <p><strong>Email:</strong> {{ student.email }}</p>
-  <p><strong>Phone Number:</strong> {{ student.phone }}</p>
-  <h2>Attendance</h2>
-  <table>
+<h1>{{ students.name }}</h1>
+<p><strong>Email:</strong> {{ students.email }}</p>
+<p><strong>Phone Number:</strong> {{ students.phone }}</p>
+
+<h2>Attendance</h2>
+<table>
     <thead>
-      <tr>
+    <tr>
         <th>Date</th>
         <th>Status</th>
-      </tr>
+    </tr>
     </thead>
     <tbody>
-      {% for attendance in student.attendance_set.all %}
-        <tr>
-          <td>{{ attendance.date }}</td>
-        </tr>
-      {% empty %}
-        <tr>
-          <td colspan="2">No attendance recorded yet.</td>
-        </tr>
-      {% endfor %}
+    {% for attendance in attendance.students %}
+    <tr>
+        <td>{{ attendance.date }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="2">No attendance recorded yet.</td>
+    </tr>
+    {% endfor %}
     </tbody>
-  </table>
-  <a href="{{student.attendance}}">Record Attendance</a>
+</table>
+    <a href="{{students.attendance}}">Record Attendance</a>
 {% endblock %}
