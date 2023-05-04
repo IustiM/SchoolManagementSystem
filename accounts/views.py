@@ -1,4 +1,5 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth import logout
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
@@ -10,7 +11,7 @@ from .forms import SignupForm, LoginForm
 
 
 #
-# def signup(request):
+# def Signup(request):
 #     if request.method == 'POST':
 #         form = SignupForm(request.POST)
 #         if form.is_valid():
@@ -18,11 +19,11 @@ from .forms import SignupForm, LoginForm
 #             username = form.cleaned_data.get('username')
 #             raw_password = form.cleaned_data.get('password1')
 #             user = authenticate(username=username, password=raw_password)
-#             login(request, user)
-#             return redirect('login')
+#             Login(request, user)
+#             return redirect('Login')
 #     else:
 #         form = SignupForm()
-#     return render(request, 'accounts/signup.html', {'form': form})
+#     return render(request, 'accounts/Signup.html', {'form': form})
 #
 #
 # def login_view(request):
@@ -33,37 +34,37 @@ from .forms import SignupForm, LoginForm
 #             password = form.cleaned_data['password']
 #             user = authenticate(request, username=username, password=password)
 #             if user is not None:
-#                 login(request, user)
-#                 return redirect('home')
+#                 Login(request, user)
+#                 return redirect('Home')
 #             else:
 #                 form.add_error(None, 'Invalid username or password')
 #     else:
 #         form = LoginForm()
-#     return render(request, 'accounts/login.html', {'form': form})
+#     return render(request, 'accounts/Login.html', {'form': form})
 #
 # @login_required
-# def logout(request):
-#     return redirect('home')
+# def Logout(request):
+#     return redirect('Home')
 #
 #
-# def home(request):
+# def Home(request):
 #     # response = HttpResponse('merge')
 #     # return response
-#     return render(request, 'accounts/home.html')
+#     return render(request, 'accounts/Home.html')
 #
-# def profile(request):
-#     return render(request, 'accounts/profile.html')
+# def Profile(request):
+#     return render(request, 'accounts/Profile.html')
 
-class home(APIView):
+class Home(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'accounts/home.html'
 
     def get(self, request):
-        # return render(request, 'accounts/home.html')
+        # return render(request, 'accounts/Home.html')
         return Response()
 
 
-class signup(APIView):
+class Signup(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'accounts/signup.html'
 
@@ -72,7 +73,7 @@ class signup(APIView):
         return Response({'form':form})
 
 
-class login(APIView):
+class Login(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'accounts/login.html'
 
@@ -81,15 +82,16 @@ class login(APIView):
         return Response({'form':form})
 
 
-class logout(APIView):
+class Logout(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'accounts/logout.html'
 
     def get(self, request):
-        return Response()
+        logout(request)
+        return redirect('accounts/home.html')
 
 
-class profile(APIView):
+class Profile(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'accounts/profile.html'
 
