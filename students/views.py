@@ -88,7 +88,10 @@ class StudentDetail(APIView):
     def get(self, request, pk, format=None):
         student = self.get_object(pk)
         serializer = StudentSerializer(student)
-        return Response({"students": serializer.data})
+        attendance = Attendance.objects.filter(student=student)
+        attendance_serializer = AttendanceSerializer(attendance, many=True)
+        print(attendance_serializer.data)
+        return Response({"students": serializer.data, "attendance": attendance_serializer.data})
 
     def put(self, request, pk, format=None):
         student = self.get_object(pk)

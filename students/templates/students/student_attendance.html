@@ -4,7 +4,7 @@
 
 {% block content %}
   <h1>Record Attendance for {{ students.name }}</h1>
-  <form method="post">
+  <form method="get", action="/attendance/">
     {% csrf_token %}
     <table>
       <thead>

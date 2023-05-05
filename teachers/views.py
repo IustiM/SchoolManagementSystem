@@ -1,12 +1,13 @@
 from django.shortcuts import get_object_or_404
+from django.views.generic import CreateView, ListView
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
+from rest_framework.reverse import reverse_lazy
 from rest_framework.views import APIView
 
-from .forms import TeacherForm
-from .models import Teacher, Attendance, Schedule, Course
-from .serializers import TeacherSerializer, AttendanceSerializer, ScheduleSerializer, CourseSerializer
+from .forms import *
+from .serializers import TeacherSerializer
 
 
 class TeacherList(APIView):
@@ -35,7 +36,11 @@ class TeacherDetail(APIView):
     def get(self, request, pk, format=None):
         teacher = self.get_object(pk)
         serializer = TeacherSerializer(teacher)
-        return Response({"teacher": serializer.data})
+        user = request.user
+        if user.is_superuser or teacher == user:
+            return Response({'teacher': serializer.data})
+        else:
+            return Response({"teacher": serializer.data})
 
     def put(self, request, pk, format=None):
         teacher = self.get_object(pk)
@@ -48,3 +53,28 @@ class TeacherDetail(APIView):
         teacher = self.get_object(pk)
         teacher.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CreateExam(CreateView):
+    model = Exam
+    form_class = ExamForm
+    template_name = 'teachers/create_exam.html'
+    success_url = reverse_lazy('view_exam')
+
+    def get_initial(self):
+        teacher = get_object_or_404(Teacher, pk=self.kwargs['pk'])
+        return {'teacher': teacher}
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+
+class ViewExam(ListView):
+    model = Exam
+    template_name = 'teachers/view_exam.html'
+    context_object_name = 'exams'
+
+    def get_queryset(self):
+        teacher = get_object_or_404(Teacher, pk=self.kwargs['pk'])
+        return Exam.objects.filter(teacher=teacher)

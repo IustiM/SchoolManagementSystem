@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block title %}{{ students.name }}{% endblock %}
 
 {% block content %}
@@ -16,9 +15,10 @@
     </tr>
     </thead>
     <tbody>
-    {% for attendance in attendance.students %}
+    {% for attend in attendance %}
     <tr>
-        <td>{{ attendance.date }}</td>
+        <td>{{ attend.date }}</td>
+        <td>{{ attend.is_present }}</td>
     </tr>
     {% empty %}
     <tr>
@@ -27,5 +27,10 @@
     {% endfor %}
     </tbody>
 </table>
-    <a href="{{students.attendance}}">Record Attendance</a>
+    <form action="/students/attendance/" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="student" value="{{students.id}}">
+        <input type="hidden" name="is_present" value="true">
+    <button type="submit">Record Attendance</button>
+    </form>
 {% endblock %}

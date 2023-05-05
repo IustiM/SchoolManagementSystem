@@ -1,13 +1,13 @@
-from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth import logout, authenticate, login
+from django.shortcuts import get_object_or_404, redirect
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .forms import SignupForm, LoginForm
 from .models import NewUser
 from .serializers import NewUserSerializer, CustomAccountManagerSerializer
-from .forms import SignupForm, LoginForm
 
 
 #
@@ -70,15 +70,16 @@ class Signup(APIView):
 
     def get(self, request):
         form = SignupForm()
-        return Response({'form':form})
+        return Response({'form': form})
 
-    def post(self,request):
-        form=SignupForm(request.POST)
+    def post(self, request):
+        form = SignupForm(request.POST)
         if form.is_valid():
-            user=form.save()
+            user = form.save()
             return redirect('Login')
         else:
-            return Response({'form':form})
+            return Response({'form': form})
+
 
 class Login(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
@@ -86,7 +87,7 @@ class Login(APIView):
 
     def get(self, request):
         form = LoginForm()
-        return Response({'form':form})
+        return Response({'form': form})
 
     def post(self, request):
         form = LoginForm(request=request, data=request.POST)
@@ -98,6 +99,7 @@ class Login(APIView):
                 login(request, user)
                 return redirect('Home')
         return Response({'form': form})
+
 
 class Logout(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]

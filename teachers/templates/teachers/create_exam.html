@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Exam{% endblock %}
+
+{% block content %}
+  <h1>Create Exam</h1>
+  <form method="post">
+    {% csrf_token %}
+    <label for="name">Name:</label>
+    <input type="text" name="name" id="name" required><br>
+    <label for="teacher">Teacher:</label>
+    <select name="teacher" id="teacher" required>
+      {% for teacher in teachers %}
+        <option value="{{ teacher.pk }}">{{ teacher.name }}</option>
+      {% endfor %}
+    </select><br>
+    <label for="date">Date:</label>
+    <input type="date" name="date" id="date" required><br>
+    <label for="start_time">Start Time:</label>
+    <input type="time" name="start_time" id="start_time" required><br>
+    <label for="end_time">End Time:</label>
+    <input type="time" name="end_time" id="end_time" required><br>
+    <input type="submit" value="Create Exam">
+  </form>
+{% endblock %}
