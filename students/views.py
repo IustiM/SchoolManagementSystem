@@ -40,6 +40,9 @@ from .serializers import StudentSerializer, AttendanceSerializer
 
 
 class StudentRegister(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'students/student_register.html'
+
     def get(self, request):
         form = StudentForm()
         return Response({'form': form}, template_name='student_register.html')
@@ -57,6 +60,7 @@ class StudentRegister(APIView):
     #     serializer.is_valid(raise_exception=True)
     #     serializer.save()
     #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class StudentList(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]

@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth import logout
+from django.contrib.auth import logout, authenticate, login
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
@@ -72,6 +72,13 @@ class Signup(APIView):
         form = SignupForm()
         return Response({'form':form})
 
+    def post(self,request):
+        form=SignupForm(request.POST)
+        if form.is_valid():
+            user=form.save()
+            return redirect('Login')
+        else:
+            return Response({'form':form})
 
 class Login(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
@@ -81,6 +88,16 @@ class Login(APIView):
         form = LoginForm()
         return Response({'form':form})
 
+    def post(self, request):
+        form = LoginForm(request=request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('Home')
+        return Response({'form': form})
 
 class Logout(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
@@ -88,7 +105,7 @@ class Logout(APIView):
 
     def get(self, request):
         logout(request)
-        return redirect('accounts/home.html')
+        return redirect('Home')
 
 
 class Profile(APIView):
