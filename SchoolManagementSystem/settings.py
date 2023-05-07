@@ -29,7 +29,8 @@ INSTALLED_APPS = [
     'accounts',
     'students',
     'rest_framework',
-    'teachers'
+    'teachers',
+    'classes'
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,7 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'accounts', 'templates', 'accounts'),
             os.path.join(BASE_DIR, 'students', 'templates', 'students'),
             os.path.join(BASE_DIR, 'teachers', 'templates', 'teachers'),
+            os.path.join(BASE_DIR, 'classes', 'templates', 'classes'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {

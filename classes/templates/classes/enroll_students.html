@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Enroll Students</h1>
+
+  {% if user.is_superuser or user.is_teacher %}
+    <form method="post">
+      {% csrf_token %}
+      <label for="student">Select a student:</label>
+      <select name="student" id="student">
+        {% for student in students %}
+          <option value="{{ student.id }}">{{ student.name }}</option>
+        {% endfor %}
+      </select>
+      <br><br>
+      <label for="class">Select a class:</label>
+      <select name="class" id="class">
+        {% for class in classes %}
+          <option value="{{ class.id }}">{{ class.name }}</option>
+        {% endfor %}
+      </select>
+      <br><br>
+      <input type="submit" value="Enroll">
+    </form>
+  {% else %}
+    <p>You must be a superuser or teacher to enroll students.</p>
+  {% endif %}
+{% endblock %}

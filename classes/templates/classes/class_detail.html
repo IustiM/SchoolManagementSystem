@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ class_obj.name }} details
+{% endblock %}
+
+{% block content %}
+    <h1>{{ class_obj.name }} details</h1>
+    <p><strong>Code:</strong> {{ class_obj.code }}</p>
+    <p><strong>Teacher:</strong> {{ class_obj.teacher }}</p>
+    <p><strong>Start time:</strong> {{ class_obj.start_time }}</p>
+    <p><strong>End time:</strong> {{ class_obj.end_time }}</p>
+    <h2>Schedule</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Day of week</th>
+            <th>Start time</th>
+            <th>End time</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for schedule in class_obj.schedule.all %}
+            <tr>
+                <td>{{ schedule.day_of_week }}</td>
+                <td>{{ schedule.start_time }}</td>
+                <td>{{ schedule.end_time }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <h2>Enrollments</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Student</th>
+            <th>Enrollment date</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for enrollment in class_obj.enrollments.all %}
+            <tr>
+                <td>{{ enrollment.student }}</td>
+                <td>{{ enrollment.enrollment_date }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
