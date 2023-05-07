@@ -90,7 +90,7 @@ class StudentDetail(APIView):
         serializer = StudentSerializer(student)
         attendance = Attendance.objects.filter(student=student)
         attendance_serializer = AttendanceSerializer(attendance, many=True)
-        print(attendance_serializer.data)
+        # print(attendance_serializer.data)
         return Response({"students": serializer.data, "attendance": attendance_serializer.data})
 
     def put(self, request, pk, format=None):

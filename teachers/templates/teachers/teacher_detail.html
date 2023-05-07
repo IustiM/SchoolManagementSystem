@@ -11,8 +11,8 @@
   <p>Subject: {{ teacher.subject }}</p>
   <p>Bio: {{ teacher.bio }}</p>
   {% if user.is_superuser or user.is_teacher %}
-  <a href="create_exam teacher.id ">Create Exam</a>
-  <a href="view_exam teacher.id">View Exams</a>
+  <a href="create_exam">Create Exam</a>
+  <a href="view_exam">View Exams</a>
   {% endif %}
 
 {% endblock %}

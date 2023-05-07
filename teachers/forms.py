@@ -25,8 +25,8 @@ class ExamForm(forms.ModelForm):
         fields = ['title', 'start_time', 'end_time']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'start_time': forms.TimeField(),
-            'end_time': forms.TimeField()
+            'start_time': forms.TimeInput(),
+            'end_time': forms.TimeInput()
 
         }
 

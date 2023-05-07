@@ -56,6 +56,7 @@ class TeacherDetail(APIView):
 
 
 class CreateExam(CreateView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     model = Exam
     form_class = ExamForm
     template_name = 'teachers/create_exam.html'
@@ -71,6 +72,7 @@ class CreateExam(CreateView):
 
 
 class ViewExam(ListView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     model = Exam
     template_name = 'teachers/view_exam.html'
     context_object_name = 'exams'
