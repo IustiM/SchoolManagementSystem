@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 
 from students.models import Student
@@ -32,6 +34,7 @@ class Schedule(models.Model):
 class Enrollment(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     class_obj = models.ForeignKey(Class, on_delete=models.CASCADE)
+    enrollment_date = models.DateField(default=datetime.date.today())
 
     def __str__(self):
         return f"{self.student} - {self.class_obj.name}"

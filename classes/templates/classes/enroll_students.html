@@ -20,9 +20,35 @@
         {% endfor %}
       </select>
       <br><br>
+      <label for="enrollment_date">Enrollment Date:</label>
+      <input type="date" name="enrollment_date" id="enrollment_date">
+      <br><br>
       <input type="submit" value="Enroll">
     </form>
   {% else %}
     <p>You must be a superuser or teacher to enroll students.</p>
+  {% endif %}
+
+  {% if enrollments %}
+    <hr>
+    <h2>Enrollment List</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>Class Name</th>
+          <th>Enrollment Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for enrollment in enrollments %}
+          <tr>
+            <td>{{ enrollment.student.name }}</td>
+            <td>{{ enrollment.class_obj.name }}</td>
+            <td>{{ enrollment.enrollment_date }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   {% endif %}
 {% endblock %}

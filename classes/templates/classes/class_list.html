@@ -24,12 +24,14 @@
                 <td>{{ class_obj.teacher }}</td>
                 <td>{{ class_obj.start_time }}</td>
                 <td>{{ class_obj.end_time }}</td>
-                <td><a href="{% url 'class_detail' pk=class_obj.pk %}">Details</a></td>
+                <td><a href="{% url 'classes:class_detail_view' pk=class_obj.pk %}">Details</a></td>
                 {% if request.user.is_superuser or request.user == class_obj.teacher %}
-                    <td><a href="{% url 'enroll_students' class_id=class_obj.pk %}">Enroll students</a></td>
+                    <td><a href="{% url 'classes:enroll_students'  %}">Enroll students</a></td>
                 {% endif %}
             </tr>
         {% endfor %}
         </tbody>
     </table>
 {% endblock %}
+
+
