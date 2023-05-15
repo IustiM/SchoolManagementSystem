@@ -27,7 +27,7 @@ class ClassSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Class
-        fields = ['id', 'name', 'code', 'teacher', 'students', 'enrollments', 'schedule']
+        fields = ['id', 'name', 'code', 'teacher', 'students', 'enrollments', 'schedule', 'start_time', 'end_time']
 
 
 class EnrollmentDetailSerializer(serializers.ModelSerializer):

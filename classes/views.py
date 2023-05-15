@@ -20,11 +20,22 @@ class ClassListView(APIView):
         return render(request, 'class_list.html', {'classes': serializer.data})
 
 
+# @api_view(('GET',))
+# @renderer_classes((JSONRenderer,))
 class ClassDetail(APIView):
-    def get(self, request, pk):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'classes/class_detail.html'
+
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
         class_obj = get_object_or_404(Class, pk=pk)
         serializer = ClassSerializer(class_obj)
-        return Response(serializer.data)
+        data = serializer.data
+        if request.accepted_renderer.format == 'html':
+            print(data)
+            context = {'class_obj': data}
+            return render(request, self.template_name, context=context)
+        return Response(data)
 
 
 class ClassView(APIView):
@@ -35,7 +46,12 @@ class ClassView(APIView):
     def get_queryset(self):
         return Class.objects.all()
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get(self.lookup_url_kwarg)
+        if pk is not None:
+            instance = self.get_queryset().get(pk=pk)
+            serializer = self.serializer_class(instance)
+            return Response(serializer.data, template_name='class_detail.html')
         classes = self.get_queryset()
         context = {'classes': classes}
         return render(request, 'class_list.html', context)
