@@ -1,6 +1,5 @@
-import datetime
-
 from django.db import models
+from django.utils import timezone
 
 from students.models import Student
 from teachers.models import Teacher
@@ -34,7 +33,7 @@ class Schedule(models.Model):
 class Enrollment(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     class_obj = models.ForeignKey(Class, on_delete=models.CASCADE)
-    enrollment_date = models.DateField(default=datetime.date.today())
+    enrollment_date = models.DateField(default=timezone.now)
 
     def __str__(self):
         return f"{self.student} - {self.class_obj.name}"

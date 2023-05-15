@@ -1,21 +1,33 @@
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from students.models import Student
 from .models import Class, Enrollment
 from .serializers import ClassSerializer, EnrollmentSerializer
 
 
-class ClassListView(generics.ListAPIView):
-    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    queryset = Class.objects.all()
-    serializer_class = ClassSerializer
-    template_name = 'class_list.html'
+class ClassListView(APIView):
+    def get(self, request):
+        classes = Class.objects.all()
+        serializer = ClassSerializer(classes, many=True)
+        # if request.accepted_renderer.format == 'json':
+        #     return Response(serializer.data)
+        # elif request.accepted_renderer.format == 'html':
+        return render(request, 'class_list.html', {'classes': serializer.data})
 
 
-class ClassView(generics.RetrieveUpdateDestroyAPIView):
+class ClassDetail(APIView):
+    def get(self, request, pk):
+        class_obj = get_object_or_404(Class, pk=pk)
+        serializer = ClassSerializer(class_obj)
+        return Response(serializer.data)
+
+
+class ClassView(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     serializer_class = ClassSerializer
     lookup_url_kwarg = 'pk'
@@ -24,7 +36,7 @@ class ClassView(generics.RetrieveUpdateDestroyAPIView):
         return Class.objects.all()
 
     def get(self, request):
-        classes = Class.objects.all()
+        classes = self.get_queryset()
         context = {'classes': classes}
         return render(request, 'class_list.html', context)
 
@@ -36,7 +48,7 @@ class ClassView(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, *args, **kwargs):
-        instance = self.get_object()
+        instance = self.get_queryset().get(pk=self.kwargs.get(self.lookup_url_kwarg))
         serializer = self.serializer_class(instance, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -44,61 +56,57 @@ class ClassView(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
+        instance = self.get_queryset().get(pk=self.kwargs.get(self.lookup_url_kwarg))
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class EnrollmentView(generics.ListCreateAPIView):
+class EnrollmentView(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    queryset = Enrollment.objects.all()
-    serializer_class = EnrollmentSerializer
-    template_name = 'enroll_students.html'
-
-    # def get_serializer_class(self):
-    #     if self.request.method == 'POST':
-    #         return EnrollmentSerializer
-    #     return EnrollmentDetailSerializer
+    template_name = 'classes/enroll_students.html'
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = {}
         context['students'] = Student.objects.all()
         context['classes'] = Class.objects.all()
         return context
 
     def get(self, request, *args, **kwargs):
-        # enrollments = self.queryset
-        enrollments = []
-        context = {'enrollments': enrollments}
-        return render(request, 'enroll_students.html', context)
+        if request.accepted_renderer.format == 'html':
+            context = self.get_context_data()
+            return render(request, self.template_name, context)
+        else:
+            enrollments = Enrollment.objects.all()
+            serializer = EnrollmentSerializer(enrollments, many=True)
+            return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
+        serializer = EnrollmentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.serializer_class(instance, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.delete()
+    def put(self, request, pk, *args, **kwargs):
+        try:
+            enrollment = Enrollment.objects.get(pk=pk)
+        except Enrollment.DoesNotExist:
+            raise Http404
+
+        serializer = EnrollmentSerializer(enrollment, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            enrollment = Enrollment.objects.get(pk=pk)
+        except Enrollment.DoesNotExist:
+            raise Http404
+
+        enrollment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-def ClassDetail(request, pk):
-    class_obj = get_object_or_404(Class, pk=pk)
-    context = {
-        'class_obj': class_obj,
-    }
-    return render(request, 'class_detail.html', context)
 
 # def enroll_students(request):
 #     students = Student.objects.all()
